@@ -11,22 +11,17 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Prepare names and affiliations for Global Palm Abundance paper
 ```{r prep, echo=FALSE}
-path <- '/Users/au529793/Projects/Postdoc/Global_Palm_Abundance/MS/Coauthors'
 
-pidf <- readxl::read_excel(paste0(path,'/PI_list.xlsx'))
+# Read in excel sheet with author names
+pidf <- readxl::read_excel('AuthorList.xlsx')
 
+### Sort alphabetically by last name
 pidf <- pidf[order(pidf$last, pidf$first),]
 
-leads <- c("Robert Muscarella",
-           "Thaise Emilio",
-           "Oliver L. Phillips",
-           "Simon L. Lewis",
-           "J. W. Ferry Slik",
-           "William J. Baker",
-           "Thomas L. P. Couvreur",
-           "Wolf L. Eiserhardt",
-           "Jens-Christian Svenning")
-last <- "Henrik Balslev"
+### Identify lead and last authors here
+leads <- c("Author1",
+           "Author2")
+last <- "AuthorLast"
 
 ### Get names for acknowledgements
 acknowledgements_list <- paste(pidf$full[!pidf$full %in% leads & pidf$confirmed=="ACK"], collapse=", ")
@@ -70,14 +65,9 @@ affiliation3[is.na(auth$Department3[match(author_list, auth$full)])] <- substrin
 affiliation2[affiliation2=="NA, NA, NA"] <- NA
 affiliation3[affiliation3=="NA, NA, NA"] <- NA
 
-# affiliation2 <- affiliation2[!is.na(auth$Institute2 [match(author_list, auth$full)])]
-# affiliation3 <- affiliation3[!is.na(auth$Institute3 [match(author_list, auth$full)])]
-
 affiliation_list <- as.factor(unique(as.vector(t(matrix(data=c(affiliation1, affiliation2, affiliation3), 
                                                         ncol=3, 
                                                         nrow=length(affiliation1))))))
-
-# affiliation_list <- as.factor(unique(c(affiliation1, affiliation2, affiliation3)))
 
 affiliation_list <- affiliation_list[!is.na(affiliation_list)]
 
@@ -86,7 +76,6 @@ tmp <- paste(match(affiliation1, affiliation_list),
       match(affiliation3, affiliation_list), sep=",")
 
 tmp <- gsub(",NA", "", tmp)
-
 
 paste(author_list, tmp, sep="", collapse="; ")
 
@@ -99,6 +88,10 @@ paste(1:length(affiliation_list), affiliation_list, sep=". ", collapse="\n")
 
 ```
 
+To finish:
+1. Open the MS word document
+2. Use "find and replace" to change all affiliation numbers to superscript
+3. Use "find and replace" to change to comma separators
 
 
 
