@@ -1,0 +1,113 @@
+---
+title: "Authors_and_affiliations"
+author: "Bob Muscarella"
+date: "8/13/2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Prepare names and affiliations for Global Palm Abundance paper
+```{r prep, echo=FALSE}
+path <- '/Users/au529793/Projects/Postdoc/Global_Palm_Abundance/MS/Coauthors'
+
+pidf <- readxl::read_excel(paste0(path,'/PI_list.xlsx'))
+
+pidf <- pidf[order(pidf$last, pidf$first),]
+
+leads <- c("Robert Muscarella",
+           "Thaise Emilio",
+           "Oliver L. Phillips",
+           "Simon L. Lewis",
+           "J. W. Ferry Slik",
+           "William J. Baker",
+           "Thomas L. P. Couvreur",
+           "Wolf L. Eiserhardt",
+           "Jens-Christian Svenning")
+last <- "Henrik Balslev"
+
+### Get names for acknowledgements
+acknowledgements_list <- paste(pidf$full[!pidf$full %in% leads & pidf$confirmed=="ACK"], collapse=", ")
+
+### Get author list and add affiliation numbers
+auth <- droplevels(pidf[pidf$confirmed=='YES',])
+
+author_list <- c(auth$full[match(leads, auth$full)], 
+                 auth$full[!auth$full %in% leads], 
+                 auth$full[match(last, auth$full)])
+
+auth <- auth[match(author_list, auth$full),]
+
+affiliation1 <- paste(auth$Department1 [match(author_list, auth$full)],
+                      auth$Institute1[match(author_list, auth$full)],
+                      auth$city1 [match(author_list, auth$full)],
+                      auth$country1[match(author_list, auth$full)], sep=', ')
+
+affiliation1[is.na(auth$Department1[match(author_list, auth$full)])] <- substring(affiliation1[is.na(auth$Department1[match(author_list, auth$full)])], 
+            5, 
+            nchar(affiliation1[is.na(auth$Department1[match(author_list, auth$full)])]))
+
+affiliation2 <- paste(auth$Department2 [match(author_list, auth$full)],
+                      auth$Institute2[match(author_list, auth$full)],
+                      auth$city2 [match(author_list, auth$full)],
+                      auth$country2[match(author_list, auth$full)], sep=', ')
+
+affiliation2[is.na(auth$Department2[match(author_list, auth$full)])] <- substring(affiliation2[is.na(auth$Department2[match(author_list, auth$full)])], 
+            5, 
+            nchar(affiliation2[is.na(auth$Department2[match(author_list, auth$full)])]))
+
+affiliation3 <- paste(auth$Department3 [match(author_list, auth$full)],
+                      auth$Institute3[match(author_list, auth$full)],
+                      auth$city3[match(author_list, auth$full)],
+                      auth$country3[match(author_list, auth$full)], sep=', ')
+
+affiliation3[is.na(auth$Department3[match(author_list, auth$full)])] <- substring(affiliation3[is.na(auth$Department3[match(author_list, auth$full)])], 
+            5, 
+            nchar(affiliation3[is.na(auth$Department3[match(author_list, auth$full)])]))
+
+affiliation2[affiliation2=="NA, NA, NA"] <- NA
+affiliation3[affiliation3=="NA, NA, NA"] <- NA
+
+# affiliation2 <- affiliation2[!is.na(auth$Institute2 [match(author_list, auth$full)])]
+# affiliation3 <- affiliation3[!is.na(auth$Institute3 [match(author_list, auth$full)])]
+
+affiliation_list <- as.factor(unique(as.vector(t(matrix(data=c(affiliation1, affiliation2, affiliation3), 
+                                                        ncol=3, 
+                                                        nrow=length(affiliation1))))))
+
+# affiliation_list <- as.factor(unique(c(affiliation1, affiliation2, affiliation3)))
+
+affiliation_list <- affiliation_list[!is.na(affiliation_list)]
+
+tmp <- paste(match(affiliation1, affiliation_list),
+      match(affiliation2, affiliation_list),
+      match(affiliation3, affiliation_list), sep=",")
+
+tmp <- gsub(",NA", "", tmp)
+
+
+paste(author_list, tmp, sep="", collapse="; ")
+
+```
+
+
+```{r affiliation, echo=FALSE}
+
+paste(1:length(affiliation_list), affiliation_list, sep=". ", collapse="\n")
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
